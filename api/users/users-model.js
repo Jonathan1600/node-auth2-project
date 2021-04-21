@@ -46,7 +46,7 @@ function findBy(filter) {
     .where(filter)
 }
 
-function findById(user_id) {
+const findById = async (user_id) => {
   /**
     You will need to join two tables.
     Resolves to the user with the given user_id.
@@ -57,12 +57,13 @@ function findById(user_id) {
       "role_name": "instructor"
     }
    */
-  return db("users as u")
+
+  const user = await db("users as u")
     .select("u.user_id", "u.username", "r.role_name")
     .leftJoin("roles as r", "r.role_id", "u.role_id")
-    .orderBy("u.user_id")
-    .where(user_id)
-    .first()
+    .where("u.user_id", user_id).first()
+
+  return user
 }
 
 /**
@@ -77,11 +78,11 @@ function findById(user_id) {
   In situations like these we use transactions: if anything inside the transaction
   fails, all the database changes in it are rolled back.
 
-  {
     "user_id": 7,
     "username": "anna",
     "role_name": "team lead"
-  }
+  }{
+  
  */
 async function add({ username, password, role_name }) { // done for you
   let created_user_id
